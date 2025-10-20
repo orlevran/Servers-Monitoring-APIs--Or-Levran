@@ -82,93 +82,115 @@ public class ServerEntity {
         };
     }
 
-    public Long getId()
-    {
+    public Long getId() {
         return this.id;
     }
 
-    public String getUrl()
-    {
-        return this.url;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getHost()
-    {
-        return this.host;
-    }
-
-    public Integer getPort()
-    {
-        return this.port;
-    }
-
-    public String getUsername()
-    {
-        return this.username;
-    }
-
-    public String getPassword()
-    {
-        return this.password;
-    }
-
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    public Protocol getProtocol()
-    {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Protocol getProtocol() {
         return this.protocol;
     }
 
-    public HealthStatus getCurrentStatus()
-    {
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getHost() {
+        return this.host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public Integer getPort() {
+        return this.port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public HealthStatus getCurrentStatus() {
         return this.currentStatus;
     }
 
-    public Integer getConsecutiveSuccesses()
-    {
+    public void setCurrentStatus(HealthStatus currentStatus) {
+        this.currentStatus = currentStatus;
+    }
+
+    public Integer getConsecutiveSuccesses() {
         return this.consecutiveSuccesses;
     }
 
-    public Integer getConsecutiveFailures()
-    {
-        return this.consecutiveFailures;
-    }
-
-    public Instant getLastTransitionAt()
-    {
-        return this.lastTransitionAt;
-    }
-
-    public Instant getCreatedAt()
-    {
-        return this.createdAt;
-    }
-
-    public Instant getUpdatedAt()
-    {
-        return this.updatedAt;
-    }
-
-    public void setConsecutiveSuccesses(Integer consecutiveSuccesses)
-    {
+    public void setConsecutiveSuccesses(Integer consecutiveSuccesses) {
         this.consecutiveSuccesses = consecutiveSuccesses;
     }
 
-    public void setConsecutiveFailures(Integer consecutiveFailures)
-    {
+    public Integer getConsecutiveFailures() {
+        return this.consecutiveFailures;
+    }
+
+    public void setConsecutiveFailures(Integer consecutiveFailures) {
         this.consecutiveFailures = consecutiveFailures;
     }
 
-    public void setCurrentStatus(HealthStatus status)
-    {
-        this.currentStatus = status;
+    public Instant getLastTransitionAt() {
+        return this.lastTransitionAt;
     }
 
-    public void setLastTransitionAt(Instant lastTransitionAt)
-    {
-        this.lastTransitionAt = lastTransitionAt; 
+    public void setLastTransitionAt(Instant lastTransitionAt) {
+        this.lastTransitionAt = lastTransitionAt;
+    }
+
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

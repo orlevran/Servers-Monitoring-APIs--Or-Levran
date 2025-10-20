@@ -22,6 +22,21 @@ public class ServerResponse {
 
     private List<RequestLogResponse> last10Requests;
 
+    public ServerResponse(Long id, String name, Protocol protocol, String url, String host, Integer port,
+            HealthStatus currentStatus, Instant lastTransitionAt, Integer consecutiveSuccesses,
+            Integer consecutiveFailures) {
+        setId(id);
+        setName(name);
+        setProtocol(protocol);
+        setUrl(url);
+        setHost(host);
+        setPort(port);
+        setCurrentStatus(currentStatus);
+        setLastTransitionAt(lastTransitionAt);
+        setConsecutiveSuccesses(consecutiveSuccesses);
+        setConsecutiveFailures(consecutiveFailures);
+    }
+
     public Long getId() {
         return this.id;
     }

@@ -35,17 +35,18 @@ public class ServerQueryService {
         var server = getServerOrThrow(id);
         var logs = logRepo.findTop10ByServerOrderByTimestampDesc(server);
 
-        ServerResponse response = new ServerResponse();
-        response.setId(server.getId());
-        response.setName(server.getName());
-        response.setProtocol(server.getProtocol());
-        response.setUrl(server.getUrl());
-        response.setHost(server.getHost());
-        response.setPort(server.getPort());
-        response.setCurrentStatus(server.getCurrentStatus());
-        response.setLastTransitionAt(server.getLastTransitionAt());
-        response.setConsecutiveSuccesses(server.getConsecutiveSuccesses());
-        response.setConsecutiveFailures(server.getConsecutiveFailures());
+        ServerResponse response = new ServerResponse(
+            server.getId(),
+            server.getName(),
+            server.getProtocol(),
+            server.getUrl(),
+            server.getHost(),
+            server.getPort(),
+            server.getCurrentStatus(),
+            server.getLastTransitionAt(),
+            server.getConsecutiveSuccesses(),
+            server.getConsecutiveFailures()
+        );
         response.setCreatedAt(server.getCreatedAt());
         response.setUpdatedAt(server.getUpdatedAt());
         response.setLast10Requests(logs.stream().map(this::toLog).toList());
