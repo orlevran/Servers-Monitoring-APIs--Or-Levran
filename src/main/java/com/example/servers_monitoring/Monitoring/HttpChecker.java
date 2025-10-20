@@ -31,8 +31,12 @@ public class HttpChecker implements IProtocolCheck
 
             HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
             int ms = (int)((System.nanoTime()-start)/1_000_000);
-            boolean ok = response.statusCode() >= 200 && response.statusCode() < 300;
-            return new ProbeResult(ok, response.statusCode(), ms, ok ? null : ("HTTP " + response.statusCode()));
+            boolean is2xx = response.statusCode() >= 200 && response.statusCode() < 300;
+            boolean fastEnough = ms < 45_000;
+            boolean ok = is2xx && fastEnough;
+            return new ProbeResult(ok, response.statusCode(), ms,
+                    ok ? null :
+                    (!is2xx ? ("HTTP " + response.statusCode()) : "Latency " + ms + "ms ≥ 45000ms"));
         }
         catch(Exception ex)
         {
