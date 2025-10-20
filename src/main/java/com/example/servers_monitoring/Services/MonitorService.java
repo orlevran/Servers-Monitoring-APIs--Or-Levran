@@ -21,16 +21,15 @@ public class MonitorService {
     private final ServerRepository serverRepo;
     private final RequestLogRepository logRepo;
     private final ProtocolCheckFactory factory;
-    @Nullable
-    private final EmailAlertService alerts;
+    private final AlertService alertService;
 
     public MonitorService(ServerRepository serverRepo, RequestLogRepository logRepo,
-                          ProtocolCheckFactory factory, EmailAlertService alerts)
+                          ProtocolCheckFactory factory, AlertService alertService)
     {
         this.serverRepo = serverRepo;
         this.logRepo = logRepo;
         this.factory = factory;
-        this.alerts = alerts;
+        this.alertService = alertService;
     }
 
     @Transactional
@@ -76,7 +75,7 @@ public class MonitorService {
         // 5) Alert only on transition to UNHEALTHY
         if (before != HealthStatus.UNHEALTHY && server.getCurrentStatus() == HealthStatus.UNHEALTHY)
         {
-            alerts.sendUnhealthyAlert(server, probe.error == null ? "Unknown" : probe.error);
+            alertService.sendUnhealthyAlert(server, probe.error == null ? "Unknown" : probe.error);
         }
 
         return log;

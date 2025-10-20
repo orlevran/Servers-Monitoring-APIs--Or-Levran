@@ -8,12 +8,13 @@ import com.example.servers_monitoring.Repositories.UserRepository;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 @Service
-@ConditionalOnProperty(name = "app.alerts.email.enabled", havingValue = "true", matchIfMissing = false)
-public class EmailAlertService {
+@ConditionalOnProperty(name = "app.alerts.email.enabled", havingValue = "true")
+public class EmailAlertService implements AlertService{
     private final JavaMailSender mailSender;
     private final UserRepository repository;
 
