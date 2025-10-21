@@ -1,10 +1,11 @@
 The project is written in Java Spring Boot. Using MySQL (connected to my private instance)
 
 
-**If you are using Visual Studio Code, run it with the following command:** ./mvnw clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=dev"
-
+**If you are using Visual Studio Code, run it with the following command:**
+./mvnw clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=dev"
 
 **Change the value of spring.mail.from in src\main\resources\application.properties**
+
 --------------------------------------------------------------------------------------
 Given a curl collection with the needed requests (I recommend starting with request number 17- creating user):
 
