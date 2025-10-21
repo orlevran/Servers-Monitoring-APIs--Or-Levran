@@ -9,7 +9,7 @@ __If you are using Visual Studio Code, run it with the following command:__
 **Change the value of spring.mail.from in src\main\resources\application.properties**
 
 --------------------------------------------------------------------------------------
-Given a curl collection with the needed requests (I recommend starting with request number 17- creating user):
+Given a curl collection with the needed requests (I recommend starting with request number 17- creating a user to receive an email. Change the variable values ​​according to your usage):
 
 ```json
 {
@@ -413,7 +413,7 @@ Given a curl collection with the needed requests (I recommend starting with requ
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"orlevor@gmail.com\"\n}"
+					"raw": "{\n  \"email\": \"example@email.com\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users",
