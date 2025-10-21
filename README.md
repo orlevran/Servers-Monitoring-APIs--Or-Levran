@@ -1,9 +1,9 @@
 The project is written in Java Spring Boot. Using MySQL (connected to my private instance)
 
 
-**If you are using Visual Studio Code, run it with the following command:**
+__If you are using Visual Studio Code, run it with the following command:__
 
-./mvnw clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=dev"
+* ./mvnw clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=dev"
 
 
 **Change the value of spring.mail.from in src\main\resources\application.properties**
