@@ -90,7 +90,7 @@ public class ServerQueryService {
                 if (succ >= 5) status = HealthStatus.HEALTHY;
             } else {
                 fail++; succ = 0;
-                if (fail >= 3) status = HealthStatus.UNHEALTHY;
+                if (fail <= 3) status = HealthStatus.UNHEALTHY;
             }
         }
 
