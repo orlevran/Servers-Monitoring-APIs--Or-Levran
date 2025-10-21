@@ -5,6 +5,7 @@ The project is written in Java Spring Boot. Using MySQL (connected to my private
 
 ./mvnw clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=dev"
 
+
 **Change the value of spring.mail.from in src\main\resources\application.properties**
 
 --------------------------------------------------------------------------------------
