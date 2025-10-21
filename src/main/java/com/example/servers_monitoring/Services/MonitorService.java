@@ -64,10 +64,17 @@ public class MonitorService {
         {
             server.setConsecutiveFailures(Objects.requireNonNullElse(server.getConsecutiveFailures(), 0) + 1);
             server.setConsecutiveSuccesses(0);
+
+            var oldStatus = server.getCurrentStatus();
+            
             if (server.getConsecutiveFailures() >= 3 && server.getCurrentStatus() != HealthStatus.UNHEALTHY)
             {
                 server.setCurrentStatus(HealthStatus.UNHEALTHY);
                 server.setLastTransitionAt(Instant.now());
+
+                if (oldStatus != HealthStatus.UNHEALTHY) {
+                    alertService.sendUnhealthyAlert(server, "Check Server definitions");
+                }
             }
         }
         serverRepo.save(server);

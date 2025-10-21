@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 
 import com.example.servers_monitoring.Models.DTOs.*;
 import com.example.servers_monitoring.Models.Entities.ServerEntity;
+import com.example.servers_monitoring.Models.Entities.UserEntity;
 import com.example.servers_monitoring.Repositories.RequestLogRepository;
 import com.example.servers_monitoring.Repositories.ServerRepository;
+import com.example.servers_monitoring.Repositories.UserRepository;
 import com.example.servers_monitoring.Services.MonitorService;
 import com.example.servers_monitoring.Services.ServerQueryService;
 
@@ -29,21 +32,24 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 @RestController
-@RequestMapping("/api/v1/servers")
+@RequestMapping("/api/v1")
 public class ServerController {
     private final MonitorService monitorService;
     private final ServerQueryService queryService;
     private final ServerRepository serverRepo;
     private final RequestLogRepository logRepo;
+    private final UserRepository usersRepo;
 
-    public ServerController(MonitorService monitorService, ServerQueryService queryService, ServerRepository serverRepo, RequestLogRepository logRepo) {
+    public ServerController(MonitorService monitorService, ServerQueryService queryService, ServerRepository serverRepo,
+        RequestLogRepository logRepo, UserRepository usersRepo) {
         this.monitorService = monitorService;
         this.queryService = queryService;
         this.serverRepo = serverRepo;
         this.logRepo = logRepo;
+        this.usersRepo = usersRepo;
     }
 
-    @PostMapping
+    @PostMapping("/servers")
     public ResponseEntity<ServerResponse> create(@Valid @RequestBody CreateServerRequest req) {
         try{
             switch (req.getProtocol()) {
@@ -64,7 +70,7 @@ public class ServerController {
             var body = new ServerResponse(
                 saved.getId(), saved.getName(), saved.getProtocol(), saved.getUrl(), saved.getHost(),
                 saved.getPort(), saved.getCurrentStatus(), saved.getLastTransitionAt(),
-                saved.getConsecutiveSuccesses(), saved.getConsecutiveFailures()
+                saved.getConsecutiveSuccesses(), saved.getConsecutiveFailures(), Instant.now(), Instant.now()
             );
 
             return ResponseEntity.created(URI.create("/api/v1/servers/" + saved.getId())).body(body);
@@ -74,7 +80,7 @@ public class ServerController {
         }
     }
 
-    @GetMapping("/{id}/check")
+    @GetMapping("/servers/{id}/check")
     public ResponseEntity<CheckServerResponse> check(@PathVariable Long id){
         try{
             var log = monitorService.checkNowAndPersist(id);
@@ -98,17 +104,20 @@ public class ServerController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/servers/{id}")
     public ResponseEntity<ServerResponse> getOne(@PathVariable Long id) {
         try{
             return ResponseEntity.ok().body(queryService.buildServerDetail(id));
         }
+        catch (IllegalArgumentException notFound) {
+            return ResponseEntity.notFound().build();
+        } 
         catch(Exception ex){
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @GetMapping("/{id}/requests")
+    @GetMapping("/servers/{id}/requests")
     public ResponseEntity<PagedResponse<RequestLogResponse>> history(@PathVariable Long id,
         @RequestParam(defaultValue="0") @Min(0) int page, @RequestParam(defaultValue="50") @Min(1) int size) {
 
@@ -120,10 +129,10 @@ public class ServerController {
         }
     }
 
-    @GetMapping("/{id}/healthy-at")
+    @GetMapping("/servers/{id}/healthy-at")
     public ResponseEntity<HealthyAtResponse> healthyAt(@PathVariable Long id,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant timestamp) {
-        
+
         try{
             return ResponseEntity.ok().body(queryService.healthyAt(id, timestamp));
         }
@@ -132,24 +141,40 @@ public class ServerController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/servers")
     public ResponseEntity<List<ServerResponse>> list() {
-
         try{
-            return ResponseEntity.ok().body(serverRepo.findAll().stream()
-                .map(s -> new ServerResponse(
-                    s.getId(), s.getName(), s.getProtocol(), s.getUrl(), s.getHost(),
-                    s.getPort(), s.getCurrentStatus(), s.getLastTransitionAt(),
-                    s.getConsecutiveSuccesses(), s.getConsecutiveFailures()
+            var servers = serverRepo.findAll();
+            var result = servers.stream().map(s -> {
+                var response = new ServerResponse(
+                    s.getId(), s.getName(), s.getProtocol(), s.getUrl(),
+                    s.getHost(), s.getPort(), s.getCurrentStatus(),
+                    s.getLastTransitionAt(), s.getConsecutiveSuccesses(),
+                    s.getConsecutiveFailures(), s.getCreatedAt(), s.getUpdatedAt());
+
+                var last10 = logRepo.findTop10ByServerOrderByTimestampDesc(s).stream()
+                .map(e -> new RequestLogResponse(
+                    e.getTimestamp(),
+                    Boolean.TRUE.equals(e.getSuccess()),
+                    e.getProtocolStatusCode(),
+                    e.getLatencyMs(),
+                    e.getErrorMessage()
                 ))
-            .toList());
+                .toList();
+
+                response.setLast10Requests(last10);
+
+                return response;
+            }).toList();
+
+            return ResponseEntity.ok(result);
         }
         catch(Exception ex){
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/servers/{id}")
     public ResponseEntity<ServerResponse> update(@PathVariable Long id, @Valid @RequestBody UpdateServerRequest req){
         try{
             var server = queryService.getServerOrThrow(id);
@@ -180,10 +205,8 @@ public class ServerController {
             var saved = serverRepo.save(server);
 
             var body = new ServerResponse(saved.getId(), saved.getName(), saved.getProtocol(), saved.getUrl(), saved.getHost(), saved.getPort(),
-                saved.getCurrentStatus(), saved.getLastTransitionAt(), saved.getConsecutiveSuccesses(), saved.getConsecutiveFailures());
-
-            body.setCreatedAt(saved.getCreatedAt());
-            body.setUpdatedAt(saved.getUpdatedAt());
+                saved.getCurrentStatus(), saved.getLastTransitionAt(), saved.getConsecutiveSuccesses(), saved.getConsecutiveFailures(),
+                saved.getCreatedAt(), Instant.now());
 
             return ResponseEntity.ok(body);
         }
@@ -192,7 +215,7 @@ public class ServerController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/servers/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (!serverRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -213,7 +236,43 @@ public class ServerController {
         }
     }
 
-    @GetMapping("/_ping")
+    @PostMapping("/users")
+    public ResponseEntity<?> CreateUser(@RequestBody @Validated CreateUserRequest req) {
+        try{
+            var existing = usersRepo.findByEmail(req.getEmail());
+            if (existing.isPresent()) {
+                return ResponseEntity.ok(existing.get());
+            }
+
+            var u = new UserEntity();
+            u.setEmail(req.getEmail());
+            var saved = usersRepo.save(u);
+
+            return ResponseEntity
+                .created(URI.create("/api/v1/users/" + saved.getId()))
+                .body(saved);
+        }
+        catch(Exception ex){
+            return ResponseEntity.status(409).body(
+                Map.of(
+                    "error", "User creation failed",
+                    "message", ex.getMessage())
+            );
+        }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserEntity>> UsersList() {
+        try{
+            return ResponseEntity.ok(usersRepo.findAll());
+        }
+        catch(Exception ex)
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/ping")
     public String ping() {
         return "pong";
     }

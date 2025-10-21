@@ -12,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -62,14 +64,16 @@ public class ServerEntity {
     @Column(name = "updatedAt")
     private Instant updatedAt;
 
-    void onCreate() {
-        var now = Instant.now();
-        createdAt = now;
-        updatedAt = now;
+    @PrePersist
+    public void onCreate() {
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
-    void onUpdate() {
-        updatedAt = Instant.now();
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = Instant.now();
     }
 
     public int effectivePort() {

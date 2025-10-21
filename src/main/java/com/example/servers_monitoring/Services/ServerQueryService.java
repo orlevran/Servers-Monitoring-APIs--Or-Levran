@@ -45,10 +45,10 @@ public class ServerQueryService {
             server.getCurrentStatus(),
             server.getLastTransitionAt(),
             server.getConsecutiveSuccesses(),
-            server.getConsecutiveFailures()
+            server.getConsecutiveFailures(),
+            server.getCreatedAt(),
+            server.getUpdatedAt()
         );
-        response.setCreatedAt(server.getCreatedAt());
-        response.setUpdatedAt(server.getUpdatedAt());
         response.setLast10Requests(logs.stream().map(this::toLog).toList());
         return response;
     }
@@ -90,11 +90,11 @@ public class ServerQueryService {
                 if (succ >= 5) status = HealthStatus.HEALTHY;
             } else {
                 fail++; succ = 0;
-                if (fail <= 3) status = HealthStatus.UNHEALTHY;
+                if (fail >= 3) status = HealthStatus.UNHEALTHY;
             }
         }
 
         HealthyAtResponse response = new HealthyAtResponse(id, at, status == HealthStatus.HEALTHY);
         return response;
-    } 
+    }
 }

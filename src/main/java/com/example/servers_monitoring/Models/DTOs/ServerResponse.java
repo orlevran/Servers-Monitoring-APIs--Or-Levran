@@ -24,7 +24,7 @@ public class ServerResponse {
 
     public ServerResponse(Long id, String name, Protocol protocol, String url, String host, Integer port,
             HealthStatus currentStatus, Instant lastTransitionAt, Integer consecutiveSuccesses,
-            Integer consecutiveFailures) {
+            Integer consecutiveFailures, Instant createdAt, Instant updatedAt) {
         setId(id);
         setName(name);
         setProtocol(protocol);
@@ -35,6 +35,8 @@ public class ServerResponse {
         setLastTransitionAt(lastTransitionAt);
         setConsecutiveSuccesses(consecutiveSuccesses);
         setConsecutiveFailures(consecutiveFailures);
+        setCreatedAt(createdAt);
+        setUpdatedAt(updatedAt);
     }
 
     public Long getId() {

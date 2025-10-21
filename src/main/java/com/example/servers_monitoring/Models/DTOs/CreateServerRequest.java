@@ -1,5 +1,7 @@
 package com.example.servers_monitoring.Models.DTOs;
 
+import java.time.Instant;
+
 import com.example.servers_monitoring.Models.Entities.ServerEntity;
 import com.example.servers_monitoring.Models.Enums.Protocol;
 import jakarta.validation.constraints.*;
@@ -29,6 +31,9 @@ public class CreateServerRequest {
 
     @Size(max = 256)
     private String password;
+
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public String getName() {
         return this.name;
@@ -84,6 +89,22 @@ public class CreateServerRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public ServerEntity toEntity() {
